@@ -1,0 +1,95 @@
+/* src/App.css */
+:root {
+  --primary: #007bff;
+  --dark: #1a1a1a;
+  --light: #ffffff;
+  --gray: #f8f9fa;
+}
+
+.landing-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1a1a 0%, #007bff 100%);
+  color: white;
+  text-align: center;
+}
+
+.logo-text {
+  font-size: 5rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+  margin-bottom: 10px;
+  text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.hero-sub {
+  font-size: 1.5rem;
+  opacity: 0.8;
+  margin-bottom: 40px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.btn-primary, .btn-secondary, .btn-submit {
+  padding: 15px 40px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s;
+}
+
+.btn-primary { background: var(--light); color: var(--dark); }
+.btn-secondary { background: transparent; color: var(--light); border: 2px solid var(--light); }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+
+/* Auth Card Styling */
+.auth-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray);
+}
+
+.auth-card {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  outline: none;
+}
+
+.btn-submit {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  margin-top: 20px;
+  border-radius: 8px;
+}
+
+.toggle-text {
+  margin-top: 20px;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
