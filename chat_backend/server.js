@@ -1,36 +1,37 @@
-require("dotenv").config();
+require("dotenv").config(); // Sabse pehle env load karo
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 
-const connectDB = require("./config/db");
-const authRoutes = require("./routes/authRoutes");
+const connectDB = require("./config/db"); // DB connection logic [cite: 1]
+const authRoutes = require("./routes/authRoutes"); // OTP routes isme honge
 const messageRoutes = require("./routes/messageRoutes");
 const chatSocket = require("./sockets/chatSocket");
 
-connectDB();
+connectDB(); // MongoDB connect karo [cite: 1]
 
 const app = express();
 const server = http.createServer(app);
 
-// 1. Update Socket.io CORS for Live
+// Socket.io Setup
 const io = new Server(server, {
   cors: { 
-    origin: "*", // Allows any frontend to connect; better for debugging live issues
+    origin: "*", 
     methods: ["GET", "POST"]
   },
 });
 
-chatSocket(io);
+chatSocket(io); // Socket events initialize
 
-// 2. Move CORS middleware to the top
+// Middlewares
 app.use(cors()); 
-app.use(express.json());
+app.use(express.json()); // Body parser for JSON
 
-app.use("/api/auth", authRoutes);
+// Routes
+app.use("/api/auth", authRoutes); // Yahan se /send-otp aur /register chalenge
 app.use("/api/messages", messageRoutes);
 
-// 3. CRITICAL: Use process.env.PORT for Render
+// Server Listen
 const PORT = process.env.PORT || 5000; 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
