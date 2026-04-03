@@ -25,13 +25,22 @@ const io = new Server(server, {
 chatSocket(io); // Socket events initialize
 
 // Middlewares
-app.use(cors()); 
+app.use(cors({
+  origin: ["http://localhost:5173", "https://your-frontend-link.vercel.app"], // Apna frontend link bhi add kar dena
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 app.use(express.json()); // Body parser for JSON
 
 // Routes
 app.use("/api/auth", authRoutes); // Yahan se /send-otp aur /register chalenge
 app.use("/api/messages", messageRoutes);
 
+
 // Server Listen
 const PORT = process.env.PORT || 5000; 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
+
