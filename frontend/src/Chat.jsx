@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import API from "./api";
 import socket from "./socket";
 import { jwtDecode } from "jwt-decode";
+import { Send, Search, LogOut, MessageSquare, User as UserIcon } from "lucide-react";
 import "./Chat.css";
 
 export default function Chat() {
@@ -28,7 +29,7 @@ export default function Chat() {
   const fetchRecentChats = async () => {
     if (!userId) return;
     try {
-      const res = await API.get(`/messages/conversations?userId=${userId}`); 
+      const res = await API.get(`https://chatapp-2csn.onrender.com/api/messages/conversations?userId=${userId}`); 
       setRecentUsers(res.data);
     } catch (err) { console.log(err); }
   };
@@ -40,7 +41,7 @@ export default function Chat() {
     setSearch(q);
     if (q.length > 1) {
       try {
-        const res = await API.get(`/auth/search?q=${q}`);
+        const res = await API.get(`https://chatapp-2csn.onrender.com/api/auth/search?q=${q}`);
         setSearchResults(res.data.filter((u) => u._id !== userId));
       } catch (err) { console.log(err); }
     } else { setSearchResults([]); }
@@ -51,7 +52,7 @@ export default function Chat() {
     setSearch("");
     setSearchResults([]);
     try {
-      const res = await API.get(`/messages?sender=${userId}&receiver=${user._id}`);
+      const res = await API.get(`https://chatapp-2csn.onrender.com/api/messages?sender=${userId}&receiver=${user._id}`);
       setMessages(res.data);
     } catch (err) { console.log(err); }
   };
@@ -65,108 +66,99 @@ export default function Chat() {
     fetchRecentChats();
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.reload();
-  };
-
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
   return (
-    <div className="chat-container">
-      {/* SIDEBAR */}
-      <div className="sidebar">
-        <div className="sidebar-header">
-          <h3>Node-Talk</h3>
-          <button className="logout-btn" onClick={handleLogout}>Logout</button>
+    <div className="chat-layout">
+      <aside className="sidebar-modern">
+        <header className="sidebar-head">
+          <div className="brand">
+            <MessageSquare color="#fff" />
+            <span>NodeTalk</span>
+          </div>
+          <button className="icon-btn-logout" onClick={() => { localStorage.clear(); window.location.reload(); }}>
+            <LogOut size={20} />
+          </button>
+        </header>
+
+        <div className="search-box-wrapper">
+          <Search size={18} className="search-icon" />
+          <input placeholder="Search friends..." value={search} onChange={handleSearch} />
         </div>
 
-        <div className="search-container">
-          <input
-            className="search-input"
-            placeholder="Search by username..."
-            value={search}
-            onChange={handleSearch}
-          />
-        </div>
-
-        <div style={{ flex: 1, overflowY: "auto" }}>
+        <div className="user-list-scroll">
           {searchResults.length > 0 && (
-            <div className="search-results-section">
-              <p style={{ padding: "10px 20px", fontSize: "12px", color: "gray", fontWeight: "bold" }}>SEARCH RESULTS</p>
+            <div className="section-wrap">
+              <label>Search Results</label>
               {searchResults.map((u) => (
-                <div key={u._id} onClick={() => selectUser(u)} className="user-card">
-                  <div className="avatar">{u.name[0]}</div>
-                  <div>
-                    <strong>{u.name}</strong><br/>
-                    <small>@{u.username}</small>
+                <div key={u._id} onClick={() => selectUser(u)} className="user-item">
+                  <div className="avatar-circle">{u.name[0]}</div>
+                  <div className="user-info">
+                    <h5>{u.name}</h5>
+                    <span>@{u.username}</span>
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          <div className="recent-chats-section">
-            <p style={{ padding: "10px 20px", fontSize: "12px", color: "gray", fontWeight: "bold" }}>RECENT CHATS</p>
-            {recentUsers.length === 0 ? (
-              <p style={{ padding: "20px", textAlign: "center", color: "#999", fontSize: "13px" }}>No chats yet. Search to start!</p>
-            ) : (
-              recentUsers.map((u) => (
-                <div 
-                  key={u._id} 
-                  onClick={() => selectUser(u)} 
-                  className={`user-card ${selectedUser?._id === u._id ? "active" : ""}`}
-                >
-                  <div className="avatar">{u.name[0]}</div>
-                  <div>
-                    <strong>{u.name}</strong><br/>
-                    <small>@{u.username}</small>
-                  </div>
+          <div className="section-wrap">
+            <label>Recent Conversations</label>
+            {recentUsers.map((u) => (
+              <div key={u._id} onClick={() => selectUser(u)} className={`user-item ${selectedUser?._id === u._id ? "active" : ""}`}>
+                <div className="avatar-circle">{u.name[0]}</div>
+                <div className="user-info">
+                  <h5>{u.name}</h5>
+                  <span>View profile</span>
                 </div>
-              ))
-            )}
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </aside>
 
-      {/* CHAT AREA */}
-      <div className="chat-area">
+      <main className="main-chat-window">
         {selectedUser ? (
           <>
-            <div className="chat-header">
-              <div className="avatar" style={{ width: "35px", height: "35px", fontSize: "14px" }}>{selectedUser.name[0]}</div>
-              <span>{selectedUser.name}</span>
-            </div>
+            <header className="chat-top-bar">
+              <div className="avatar-small">{selectedUser.name[0]}</div>
+              <div className="status-info">
+                <h4>{selectedUser.name}</h4>
+                <p>Online</p>
+              </div>
+            </header>
 
-            <div className="messages-container">
+            <div className="messages-area">
               {messages.map((m, i) => (
-                <div key={i} className={`message-bubble ${m.sender === userId ? "msg-sent" : "msg-received"}`}>
-                  {m.message}
+                <div key={i} className={`bubble-wrap ${m.sender === userId ? "sent" : "received"}`}>
+                  <div className="bubble-content">{m.message}</div>
                 </div>
               ))}
               <div ref={messagesEndRef}></div>
             </div>
 
-            <div className="input-area">
+            <footer className="input-dock">
               <input
-                className="chat-input-field"
                 value={msg}
                 onChange={(e) => setMsg(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Type a message..."
+                placeholder="Write a message..."
               />
-              <button className="send-button" onClick={sendMessage}>
-                ➤
+              <button className="btn-send-msg" onClick={sendMessage}>
+                <Send size={20} />
               </button>
-            </div>
+            </footer>
           </>
         ) : (
-          <div style={{ margin: "auto", textAlign: "center", color: "white", background: "rgba(0,0,0,0.4)", padding: "20px", borderRadius: "15px", backdropFilter: "blur(5px)" }}>
-            <h2>Node-Talk</h2>
-            <p>Select a conversation to start chatting.</p>
+          <div className="no-chat-state">
+            <div className="welcome-box">
+              <MessageSquare size={48} color="#667eea" />
+              <h3>Start a Conversation</h3>
+              <p>Select a user from the sidebar to begin chatting securely.</p>
+            </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
