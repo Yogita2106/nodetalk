@@ -25,9 +25,10 @@ const io = new Server(server, {
 chatSocket(io); // Socket events initialize
 
 // Middlewares
+// server.js update
 app.use(cors({
-  origin: ["http://localhost:5173", "https://your-frontend-link.vercel.app"], // Apna frontend link bhi add kar dena
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: ["http://localhost:5173", "https://nodetalk-drab.vercel.app"], // Apna Vercel link yahan dalo
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
 app.use(express.json()); // Body parser for JSON
